@@ -9,26 +9,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install ARM Toolchain & Tools
+      - name: Install ARM Toolchain
         run: |
           sudo apt-get update
           sudo apt-get install -y gcc-arm-none-eabi make curl unzip
 
-      - name: Download EADK SDK Zip
+      - name: Download and Build EADK
         run: |
           curl -L -o eadk.zip https://github.com/numworks/eadk/archive/refs/heads/master.zip
-          unzip eadk.zip
-          mv eadk-master eadk_folder
-
-      - name: Compile Application
-        run: |
-          arm-none-eabi-g++ -O3 -Ieadk_folder -c main.cpp -o main.o
-          arm-none-eabi-gcc -nostdlib main.o eadk_folder/target/eadk.a -o firmware.elf
-          mkdir -p output
-          arm-none-eabi-objcopy -O binary firmware.elf output/mon_launcher.nwa
+          unzip -q eadk.zip
+          mv eadk-master eadk
+          make -C eadk BUILD_DIR=../output
 
       - name: Upload .nwa Artifact
         uses: actions/upload-artifact@v4
         with:
           name: MonLauncher-nwa
-          path: output/mon_launcher.nwa
+          path: output/*.nwa
