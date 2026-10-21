@@ -1,20 +1,21 @@
 name: Build NumWorks App
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: numworks/eadk:latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install ARM Toolchain
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-arm-none-eabi make
+      - name: Build App
+        run: make
 
-      - name: Build with EADK
-        run: |
-          git clone https://github.com/numworks/eadk.git eadk_sdk
-          make -f eadk_sdk/module.mak || make
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-nwa
+          path: output/*.nwa
