@@ -6,30 +6,28 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Mon Launcher
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Checkout EADK SDK
-        uses: actions/checkout@v4
-        with:
-          repository: numworks/eadk
-          path: eadk
 
       - name: Install ARM Toolchain
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc-arm-none-eabi make
+          sudo apt-get install -y gcc-arm-none-eabi make git
+
+      - name: Clone Official Sample App
+        run: |
+          git clone --depth 1 https://github.com/numworks/epsilon-sample-app-cpp.git sample_app
+          # On copie le Makefile et les sources de base du SDK d'exemple dans ton projet
+          cp sample_app/Makefile .
+          cp -r sample_app/eadk .
 
       - name: Build Application
         run: |
           mkdir -p output
-          make -f eadk/eadk.mk \
-            EADK_PATH=eadk \
-            TARGET=output/mon_launcher.nwa \
-            SOURCES="main.cpp"
+          make BUILD_DIR=output
 
       - name: Upload .nwa Artifact
         uses: actions/upload-artifact@v4
         with:
           name: MonLauncher-nwa
-          path: output/mon_launcher.nwa
+          path: output/*.nwa
