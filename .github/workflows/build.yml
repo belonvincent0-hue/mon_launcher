@@ -18,20 +18,19 @@ jobs:
 
       - name: Build with Official Template
         run: |
-          # Cloner le modèle officiel NumWorks
           git clone --depth 1 https://github.com/numworks/epsilon-sample-app-cpp.git sample_app
           
-          # Remplacer le main.cpp du modèle par le tien
+          # Injecter ton code source
           if [ -f user_repo/main.cpp ]; then
             cp user_repo/main.cpp sample_app/src/main.cpp
           fi
           
-          # Compiler à l'intérieur du modèle officiel
+          # Compiler proprement
           cd sample_app
           mkdir -p output
           make BUILD_DIR=output
           
-          # Récupérer le fichier .nwa généré
+          # Récupérer l'artefact
           cd ..
           mkdir -p output
           cp sample_app/output/*.nwa output/mon_launcher.nwa
