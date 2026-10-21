@@ -9,19 +9,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install ARM Toolchain
+      - name: Install ARM Toolchain & Tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc-arm-none-eabi make git
+          sudo apt-get install -y gcc-arm-none-eabi make curl unzip
+
+      - name: Download EADK SDK Zip
+        run: |
+          curl -L -o eadk.zip https://github.com/numworks/eadk/archive/refs/heads/master.zip
+          unzip eadk.zip
+          mv eadk-master eadk_folder
 
       - name: Compile Application
         run: |
-          git clone https://github.com/numworks/eadk.git eadk_folder
-          # Compilation directe avec le compilateur ARM
           arm-none-eabi-g++ -O3 -Ieadk_folder -c main.cpp -o main.o
           arm-none-eabi-gcc -nostdlib main.o eadk_folder/target/eadk.a -o firmware.elf
           mkdir -p output
-          # Génération du fichier .nwa final
           arm-none-eabi-objcopy -O binary firmware.elf output/mon_launcher.nwa
 
       - name: Upload .nwa Artifact
