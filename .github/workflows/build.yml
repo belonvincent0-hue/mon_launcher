@@ -16,9 +16,9 @@ jobs:
 
       - name: Download EADK SDK
         run: |
-          curl -L -o eadk.zip https://github.com/numworks/eadk/archive/refs/heads/master.zip
+          curl -L -o eadk.zip https://github.com/numworks/eadk/archive/refs/heads/main.zip
           unzip -q eadk.zip
-          mv eadk-master eadk
+          mv eadk-main eadk
 
       - name: Build Application
         run: |
