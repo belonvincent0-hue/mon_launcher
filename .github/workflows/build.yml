@@ -16,14 +16,14 @@ jobs:
 
       - name: Get EADK SDK
         run: |
-          git clone https://github.com/numworks/epsilon-sample-app-cpp.git sample_app
-          cp -r sample_app/eadk .
+          git clone https://github.com/numworks/eadk.git eadk_sdk
 
       - name: Build App
-        run: make
+        run: |
+          make -f eadk_sdk/eadk.mk BUILD_DIR=build NWLINK_PATH=eadk_sdk/target/eadk.nwa
 
       - name: Upload .nwa Artifact
         uses: actions/upload-artifact@v4
         with:
           name: MonLauncher-nwa
-          path: output/
+          path: build/*.nwa
