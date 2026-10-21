@@ -14,15 +14,22 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc-arm-none-eabi make curl unzip
 
-      - name: Download and Build EADK
+      - name: Download EADK SDK
         run: |
           curl -L -o eadk.zip https://github.com/numworks/eadk/archive/refs/heads/master.zip
           unzip -q eadk.zip
           mv eadk-master eadk
-          make -C eadk BUILD_DIR=../output
+
+      - name: Build Application
+        run: |
+          mkdir -p output
+          make -f eadk/eadk.mk \
+            EADK_PATH=eadk \
+            TARGET=output/mon_launcher.nwa \
+            SOURCES="main.cpp"
 
       - name: Upload .nwa Artifact
         uses: actions/upload-artifact@v4
         with:
           name: MonLauncher-nwa
-          path: output/*.nwa
+          path: output/mon_launcher.nwa
