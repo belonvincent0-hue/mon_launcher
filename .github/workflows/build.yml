@@ -11,16 +11,21 @@ jobs:
         with:
           path: user_repo
 
+      - name: Checkout Official Sample App with Submodules
+        uses: actions/checkout@v4
+        with:
+          repository: numworks/epsilon-sample-app-cpp
+          submodules: recursive
+          path: sample_app
+
       - name: Install ARM Toolchain
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc-arm-none-eabi make git
+          sudo apt-get install -y gcc-arm-none-eabi make
 
-      - name: Build with Official Template
+      - name: Build Application
         run: |
-          git clone --depth 1 https://github.com/numworks/epsilon-sample-app-cpp.git sample_app
-          
-          # Injecter ton code source
+          # Remplacer le code d'exemple par ton main.cpp
           if [ -f user_repo/main.cpp ]; then
             cp user_repo/main.cpp sample_app/src/main.cpp
           fi
@@ -29,9 +34,9 @@ jobs:
           cd sample_app
           mkdir -p output
           make BUILD_DIR=output
-          
-          # Récupérer l'artefact
-          cd ..
+
+      - name: Export Artifact
+        run: |
           mkdir -p output
           cp sample_app/output/*.nwa output/mon_launcher.nwa
 
