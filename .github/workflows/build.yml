@@ -14,12 +14,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc-arm-none-eabi make git
 
-      - name: Clone Official Sample App
+      - name: Setup Official Build Files
         run: |
           git clone --depth 1 https://github.com/numworks/epsilon-sample-app-cpp.git sample_app
-          # On copie le Makefile et les sources de base du SDK d'exemple dans ton projet
-          cp sample_app/Makefile .
-          cp -r sample_app/eadk .
+          # On récupère le Makefile de base et le fichier app.json s'il te manque
+          cp sample_app/Makefile Makefile
+          if [ ! -f app.json ]; then cp sample_app/app.json .; fi
+          rm -rf sample_app
 
       - name: Build Application
         run: |
